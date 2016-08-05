@@ -15,7 +15,6 @@ public class menu : MonoBehaviour {
 		audioSource = GetComponent<AudioSource> ();
 	}
 
-	// Update is called once per frame
 	void Update () {
 		if ((button.enabled == false) && (rawImage.color.a == 1.0f)) {
 			audioSource.Stop ();
@@ -29,7 +28,7 @@ public class menu : MonoBehaviour {
 				rawImage.color = aux;
 			} else {
 				if (rawImage.color.a <= 0.0f) {
-					DestroyImmediate (rawImage);
+					Destroy (rawImage);
 				}
 			}
 		}

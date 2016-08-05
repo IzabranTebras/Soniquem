@@ -2,24 +2,46 @@
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
-    private float HorizMovement;
-    private float VerticalMovement;
-    private Vector3 moveDirection;
-    private float vSpeed = 0.0f;
-    private float speed = 30.0f;
-    private CharacterController controller;
+    
+    public float vSpeed = 0.0f;
+    public float speed = 30.0f;
+    public GameObject pointsList;
+
+    private Transform[] points;
+    private int nextPoint = 0;
+    private Ray toFollowPoint;
+    private RaycastHit hit;
+
+    void OnTriggerEnter(Collider coll)
+    {
+        if (coll.gameObject.CompareTag("NextPoint"))
+        {
+            if (nextPoint < points.Length)
+            {
+                coll.enabled = false;
+                ++nextPoint;
+            }
+        }
+    }
 
     void Start()
     {
-        controller = GetComponent<CharacterController>();
+        Transform[] transform = pointsList.GetComponentsInChildren<Transform>();
+        points = new Transform[transform.Length];
+        int i = 0;
+        foreach (Transform child in transform)
+        {
+            points[i] = child;
+            ++i;
+        }
     }
 
-    // Update is called once per frame
     void Update () {
-        moveDirection = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
-        moveDirection = transform.TransformDirection(moveDirection);
-        moveDirection *= speed;
 
-        controller.Move(moveDirection * Time.deltaTime);
+        transform.Translate(Vector3.forward * Time.deltaTime*10);
+        //Physics.Raycast(transform.position, points[nextPoint].localPosition, out hit);
+        //transform.LookAt(hit.point);
+        Debug.DrawLine(transform.position, Vector3.forward);
+        //Debug.DrawLine(transform.position, hit.point);
     }
 }

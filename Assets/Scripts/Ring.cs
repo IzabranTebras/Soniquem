@@ -3,15 +3,19 @@ using System.Collections;
 
 public class Ring : MonoBehaviour {
 	public float speed=80;
+    public ParticleSystem particles;
 
-	// Update is called once per frame
+    void OnTriggerEnter(Collider col)
+    {
+        if (col.CompareTag("Player"))
+        {
+            particles.Play();
+            Destroy(this);
+        }
+    }
+
+	// Rotation continuos
 	void Update () {
-		//Continous rotation
 		transform.Rotate(Vector3.up, speed*Time.deltaTime);
-
-		if (Input.anyKey) {  //cambiar input.anyKey por colision con Sonic
-			ParticleSystem particles = GetComponentInChildren<ParticleSystem>();
-			particles.Play();
-		}
 	}
 }
