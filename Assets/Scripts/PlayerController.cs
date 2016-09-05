@@ -20,18 +20,20 @@ public class PlayerController : MonoBehaviour {
             {
                 coll.enabled = false;
                 ++nextPoint;
+                Physics.Raycast(transform.position, points[nextPoint].localPosition, out hit);
+                transform.LookAt(hit.point);
             }
         }
     }
 
     void Start()
     {
-        Transform[] transform = pointsList.GetComponentsInChildren<Transform>();
-        points = new Transform[transform.Length];
+        Transform[] transformPoints = pointsList.GetComponentsInChildren<Transform>();
+        points = new Transform[transformPoints.Length-1];
         int i = 0;
-        foreach (Transform child in transform)
+        for (int j = 1; j < transformPoints.Length; ++j)
         {
-            points[i] = child;
+            points[i] = transformPoints[j];
             ++i;
         }
     }
@@ -41,7 +43,7 @@ public class PlayerController : MonoBehaviour {
         transform.Translate(Vector3.forward * Time.deltaTime*10);
         //Physics.Raycast(transform.position, points[nextPoint].localPosition, out hit);
         //transform.LookAt(hit.point);
-        Debug.DrawLine(transform.position, Vector3.forward);
-        //Debug.DrawLine(transform.position, hit.point);
+        //Debug.DrawLine(transform.position, Vector3.forward);
+        Debug.DrawLine(transform.position, hit.point);
     }
 }
