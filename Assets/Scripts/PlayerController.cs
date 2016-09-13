@@ -3,8 +3,8 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
     
-    public float vSpeed = 0.0f;
-    public float speed = 30.0f;
+    public float vSpeed;
+    public float speed;
     public GameObject pointsList;
 
     private Transform[] points;
@@ -16,11 +16,13 @@ public class PlayerController : MonoBehaviour {
     {
         if (coll.gameObject.CompareTag("NextPoint"))
         {
+            print(points[nextPoint+1].transform.localPosition);
             if (nextPoint < points.Length)
             {
                 coll.enabled = false;
                 ++nextPoint;
                 Physics.Raycast(transform.position, points[nextPoint].localPosition, out hit);
+                print(hit.point);
                 transform.LookAt(hit.point);
             }
         }
@@ -40,7 +42,7 @@ public class PlayerController : MonoBehaviour {
 
     void Update () {
 
-        transform.Translate(Vector3.forward * Time.deltaTime*10);
+        transform.Translate(Vector3.forward * Time.deltaTime*speed);
         //Physics.Raycast(transform.position, points[nextPoint].localPosition, out hit);
         //transform.LookAt(hit.point);
         //Debug.DrawLine(transform.position, Vector3.forward);
