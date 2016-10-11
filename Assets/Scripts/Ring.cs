@@ -10,11 +10,11 @@ public class Ring : MonoBehaviour {
         if (col.CompareTag("Player"))
         {
             particles.Play();
-            Destroy(this);
+            gameObject.SetActive(false);
         }
     }
 
-	// Rotation continuos
+	// Continous rotation
 	void Update () {
 		transform.Rotate(Vector3.up, speed*Time.deltaTime);
 	}

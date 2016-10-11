@@ -17,7 +17,7 @@ public class Player : MonoBehaviour {
 
     void OnTriggerEnter(Collider coll)
     {
-        if (coll.gameObject.CompareTag("Ring"))
+        if (coll.CompareTag("Ring"))
         {
             ++rings;
             punctuation += 10;

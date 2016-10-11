@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour {
     private Transform[] points;
     private int nextPoint = 0;
     private Ray toFollowPoint;
-    private RaycastHit hit;
+    private bool stop = false;
 
     void OnTriggerEnter(Collider coll)
     {
@@ -20,8 +20,11 @@ public class PlayerController : MonoBehaviour {
             {
                 coll.enabled = false;
                 ++nextPoint;
-                Physics.Raycast(transform.position, points[nextPoint].localPosition, out hit);
-                transform.LookAt(hit.point);
+                transform.LookAt(points[nextPoint].position);
+            }
+            else
+            {
+                stop = true;
             }
         }
     }
@@ -40,10 +43,10 @@ public class PlayerController : MonoBehaviour {
 
     void Update () {
 
-        transform.Translate(Vector3.forward * Time.deltaTime*10);
-        //Physics.Raycast(transform.position, points[nextPoint].localPosition, out hit);
-        //transform.LookAt(hit.point);
-        //Debug.DrawLine(transform.position, Vector3.forward);
-        Debug.DrawLine(transform.position, hit.point);
+        if (!stop)
+        {
+            transform.Translate(Vector3.forward * Time.deltaTime * 10);
+            Debug.DrawLine(transform.position, points[nextPoint].position);
+        }
     }
 }
