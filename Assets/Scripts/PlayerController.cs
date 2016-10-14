@@ -46,7 +46,15 @@ public class PlayerController : MonoBehaviour {
         if (!stop)
         {
             transform.Translate(Vector3.forward * Time.deltaTime * 10);
-            Debug.DrawLine(transform.position, points[nextPoint].position);
+            if (Input.GetButton("Jump"))
+            {
+                transform.Translate(Vector3.up * 2);
+            }
+            else if (Input.GetButton("Horizontal"))
+            {
+                transform.Translate(Vector3.right * Input.GetAxisRaw("Horizontal"));
+            }
+            //Debug.DrawLine(transform.position, points[nextPoint].position);
         }
     }
 }
