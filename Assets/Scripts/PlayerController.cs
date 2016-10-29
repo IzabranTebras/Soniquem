@@ -29,6 +29,14 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    void OnTriggerStay(Collider coll)
+    {
+        if (coll.gameObject.CompareTag("Wall"))
+        {
+            transform.Translate(Vector3.right * (-Input.GetAxisRaw("Horizontal")));
+        }
+    }
+
     void Start()
     {
         Transform[] transformPoints = pointsList.GetComponentsInChildren<Transform>();
