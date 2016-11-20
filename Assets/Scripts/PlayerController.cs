@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour {
     private int nextPoint = 0;
     private Ray toFollowPoint;
     private bool stop = false;
+    private Vector3 targetAngle = Vector3.zero;
 
     void OnTriggerEnter(Collider coll)
     {
@@ -20,7 +21,7 @@ public class PlayerController : MonoBehaviour {
             {
                 coll.enabled = false;
                 ++nextPoint;
-                transform.LookAt(points[nextPoint].position);
+               transform.LookAt(points[nextPoint].position);
             }
             else
             {
@@ -33,7 +34,7 @@ public class PlayerController : MonoBehaviour {
     {
         if (coll.gameObject.CompareTag("Wall"))
         {
-            transform.Translate(Vector3.right * (-Input.GetAxisRaw("Horizontal")));
+            transform.Translate(Vector3.right * (-Input.GetAxisRaw("Horizontal")*0.5f));
         }
     }
 
@@ -54,15 +55,14 @@ public class PlayerController : MonoBehaviour {
         if (!stop)
         {
             transform.Translate(Vector3.forward * Time.deltaTime * 10);
-            if (Input.GetButton("Jump"))
+            if (Input.GetButtonDown("Jump"))
             {
                 transform.Translate(Vector3.up * 2);
             }
             else if (Input.GetButton("Horizontal"))
             {
-                transform.Translate(Vector3.right * Input.GetAxisRaw("Horizontal"));
+                transform.Translate(Vector3.right * Input.GetAxisRaw("Horizontal")*0.05f);
             }
-            //Debug.DrawLine(transform.position, points[nextPoint].position);
         }
     }
 }
