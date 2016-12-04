@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-enum Movement { Turning = 0, Straight}
+enum Movement { Turning = 0, Straight, Jumping}
 
 public class PlayerController : MonoBehaviour {
 
@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour {
     private Ray toFollowPoint;
     private bool stop = false;
     private Vector3 targetAngle = Vector3.zero;
+    private bool inGround = true;
 
     // If player collides with a follow point then assign the new rotation and change to turning movement
     void OnTriggerEnter(Collider coll)
@@ -50,13 +51,22 @@ public class PlayerController : MonoBehaviour {
 
     void OnTriggerStay(Collider coll)
     {
-        if (coll.gameObject.CompareTag("Wall"))
+        if (coll.CompareTag("Wall"))
         {
             transform.Translate(Vector3.right * (-Input.GetAxisRaw("Horizontal")*0.5f));
         }
     }
 
-    void Start()
+    void OnCollisionEnter(Collision coll)
+    {
+        if (coll.collider.CompareTag("Floor"))
+        {
+            movement = Movement.Straight;
+            vSpeed = 0.0f;
+        }
+    }
+
+    void Awake()
     {
         Transform[] transformPoints = pointsList.GetComponentsInChildren<Transform>();
         points = new Transform[transformPoints.Length-1];
@@ -79,6 +89,17 @@ public class PlayerController : MonoBehaviour {
                     movement = Movement.Straight;
                 }
                 break;
+
+            case Movement.Jumping:
+                if(vSpeed > 0.15f)
+                {
+                    vSpeed = Mathf.Lerp(vSpeed, 0.0f, 0.2f);
+                }
+                else
+                {
+                    vSpeed = Mathf.Lerp(vSpeed, 0.3f, 0.2f);
+                }
+                break;
         }
 
         if (!stop)
@@ -90,9 +111,10 @@ public class PlayerController : MonoBehaviour {
             }
 
             transform.Translate(Vector3.forward * speed*0.07f);
-            if (Input.GetButtonDown("Jump"))
+            transform.Translate(Vector3.up * vSpeed);
+            if (movement != Movement.Jumping && Input.GetButtonDown("Jump"))
             {
-                transform.Translate(Vector3.up * 2);
+                movement = Movement.Jumping;
             }
             else if (Input.GetButton("Horizontal"))
             {
