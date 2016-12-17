@@ -5,20 +5,21 @@ enum Movement { Turning = 0, Straight, Jumping}
 
 public class PlayerController : MonoBehaviour {
 
-    private const float maxSpeed = 10.0f;
-
-    public float vSpeed = 0.0f;
     public GameObject pointsList;
+    public bool stop = true;
+    public bool inGround = true;
+    public bool falling = false;
 
-    private float speed = 1.0f;
+    private const float maxSpeed = 10.0f;
+    private float vSpeed = 0.0f;
+    private float speed = 0.0f;
     private Movement movement = Movement.Straight;
     private float turnY = 0.0f;
     private Transform[] points;
     private int nextPoint = 0;
     private Ray toFollowPoint;
-    private bool stop = false;
+    private bool end = false;
     private Vector3 targetAngle = Vector3.zero;
-    private bool inGround = true;
 
     // If player collides with a follow point then assign the new rotation and change to turning movement
     void OnTriggerEnter(Collider coll)
@@ -44,8 +45,12 @@ public class PlayerController : MonoBehaviour {
             else
             {
                 // If not exists more points then stop the player, is the ending
-                stop = true;
+                end = true;
             }
+        }
+        else if (coll.CompareTag("Death"))
+        {
+            //End game
         }
     }
 
@@ -53,7 +58,7 @@ public class PlayerController : MonoBehaviour {
     {
         if (coll.CompareTag("Wall"))
         {
-            transform.Translate(Vector3.right * (-Input.GetAxisRaw("Horizontal")*0.5f));
+            transform.Translate(Vector3.right * (-Input.GetAxisRaw("Horizontal")*0.1f));
         }
     }
 
@@ -61,8 +66,12 @@ public class PlayerController : MonoBehaviour {
     {
         if (coll.collider.CompareTag("Floor"))
         {
-            movement = Movement.Straight;
+            if (movement != Movement.Turning)
+            {
+                movement = Movement.Straight;
+            }
             vSpeed = 0.0f;
+            falling = false;
         }
     }
 
@@ -91,27 +100,39 @@ public class PlayerController : MonoBehaviour {
                 break;
 
             case Movement.Jumping:
-                if(vSpeed > 0.15f)
+                if (!falling)
                 {
-                    vSpeed = Mathf.Lerp(vSpeed, 0.0f, 0.2f);
+                    vSpeed = Mathf.Lerp(vSpeed, 0.3f, 0.08f);
                 }
                 else
                 {
-                    vSpeed = Mathf.Lerp(vSpeed, 0.3f, 0.2f);
+                    vSpeed = Mathf.Lerp(vSpeed, 0.0f, 0.08f);
+                }
+
+                if(!falling && vSpeed > 0.2f)
+                {
+                    falling = true;
                 }
                 break;
         }
 
-        if (!stop)
+        if (!end)
         {
-            speed = Mathf.Lerp(speed, maxSpeed, 0.002f);
-            if(speed > maxSpeed)
+            if (Input.GetKey(KeyCode.W))
             {
-                speed = maxSpeed;
+                speed = Mathf.Lerp(speed, maxSpeed, 0.002f);
+                if (speed > maxSpeed)
+                {
+                    speed = maxSpeed;
+                }
+                stop = false;
             }
-
-            transform.Translate(Vector3.forward * speed*0.07f);
-            transform.Translate(Vector3.up * vSpeed);
+            else
+            {
+                stop = true;
+                speed = Mathf.Lerp(speed, 0.0f, 0.1f);
+            }
+            
             if (movement != Movement.Jumping && Input.GetButtonDown("Jump"))
             {
                 movement = Movement.Jumping;
@@ -121,5 +142,12 @@ public class PlayerController : MonoBehaviour {
                 transform.Translate(Vector3.right * Input.GetAxisRaw("Horizontal")*0.07f);
             }
         }
+        else
+        {
+            speed = 0.0f;
+        }
+
+        transform.Translate(Vector3.forward * speed * 0.07f);
+        transform.Translate(Vector3.up * vSpeed);
     }
 }
