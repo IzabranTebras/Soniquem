@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour {
     public bool falling = false;
 
     private const float maxSpeed = 10.0f;
+
     private float vSpeed = 0.0f;
     private float speed = 0.0f;
     private Movement movement = Movement.Straight;
@@ -20,63 +21,11 @@ public class PlayerController : MonoBehaviour {
     private Ray toFollowPoint;
     private bool end = false;
     private Vector3 targetAngle = Vector3.zero;
-
-    // If player collides with a follow point then assign the new rotation and change to turning movement
-    void OnTriggerEnter(Collider coll)
-    {
-        if (coll.gameObject.CompareTag("NextPoint"))
-        {
-            if (nextPoint < points.Length)
-            {
-                coll.enabled = false;
-                ++nextPoint;
-                // We check if player must go to left or right
-                if (Vector3.Angle(transform.position, points[nextPoint].position) > 0.0f && Vector3.Angle(transform.position, points[nextPoint].position) <= 90.0f)
-                {
-                    movement = Movement.Turning;
-                    turnY = transform.eulerAngles.y + 90.0f;
-                }
-                else
-                {
-                    movement = Movement.Turning;
-                    turnY = transform.eulerAngles.y - 90.0f;
-                }
-            }
-            else
-            {
-                // If not exists more points then stop the player, is the ending
-                end = true;
-            }
-        }
-        else if (coll.CompareTag("Death"))
-        {
-            //End game
-        }
-    }
-
-    void OnTriggerStay(Collider coll)
-    {
-        if (coll.CompareTag("Wall"))
-        {
-            transform.Translate(Vector3.right * (-Input.GetAxisRaw("Horizontal")*0.1f));
-        }
-    }
-
-    void OnCollisionEnter(Collision coll)
-    {
-        if (coll.collider.CompareTag("Floor"))
-        {
-            if (movement != Movement.Turning)
-            {
-                movement = Movement.Straight;
-            }
-            vSpeed = 0.0f;
-            falling = false;
-        }
-    }
+    private Rigidbody myRigid = null;
 
     void Awake()
     {
+        myRigid = GetComponent<Rigidbody>();
         Transform[] transformPoints = pointsList.GetComponentsInChildren<Transform>();
         points = new Transform[transformPoints.Length-1];
         int i = 0;
@@ -132,14 +81,14 @@ public class PlayerController : MonoBehaviour {
                 stop = true;
                 speed = Mathf.Lerp(speed, 0.0f, 0.1f);
             }
-            
+
             if (movement != Movement.Jumping && Input.GetButtonDown("Jump"))
             {
                 movement = Movement.Jumping;
             }
             else if (Input.GetButton("Horizontal"))
             {
-                transform.Translate(Vector3.right * Input.GetAxisRaw("Horizontal")*0.07f);
+                transform.Rotate(Vector3.up*Input.GetAxisRaw("Horizontal")*2);
             }
         }
         else
@@ -147,7 +96,62 @@ public class PlayerController : MonoBehaviour {
             speed = 0.0f;
         }
 
+        //myRigid.AddForce(Vector3.forward * speed, ForceMode.Acceleration);
         transform.Translate(Vector3.forward * speed * 0.07f);
         transform.Translate(Vector3.up * vSpeed);
+    }
+
+    // If player collides with a follow point then assign the new rotation and change to turning movement
+    void OnTriggerEnter(Collider coll)
+    {
+        if (coll.gameObject.CompareTag("NextPoint"))
+        {
+            if (nextPoint < points.Length)
+            {
+                coll.enabled = false;
+                ++nextPoint;
+                // We check if player must go to left or right
+                if (Vector3.Angle(transform.position, points[nextPoint].position) > 0.0f && Vector3.Angle(transform.position, points[nextPoint].position) <= 90.0f)
+                {
+                    movement = Movement.Turning;
+                    turnY = transform.eulerAngles.y + 90.0f;
+                }
+                else
+                {
+                    movement = Movement.Turning;
+                    turnY = transform.eulerAngles.y - 90.0f;
+                }
+            }
+            else
+            {
+                // If not exists more points then stop the player, is the ending
+                end = true;
+            }
+        }
+        else if (coll.CompareTag("Death"))
+        {
+            //End game
+        }
+    }
+
+    void OnTriggerStay(Collider coll)
+    {
+        if (coll.CompareTag("Wall"))
+        {
+            transform.Translate(Vector3.right * (-Input.GetAxisRaw("Horizontal") * 0.1f));
+        }
+    }
+
+    void OnCollisionEnter(Collision coll)
+    {
+        if (coll.collider.CompareTag("Floor"))
+        {
+            if (movement != Movement.Turning)
+            {
+                movement = Movement.Straight;
+            }
+            vSpeed = 0.0f;
+            falling = false;
+        }
     }
 }
