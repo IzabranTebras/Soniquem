@@ -96,8 +96,8 @@ public class PlayerController : MonoBehaviour {
             speed = 0.0f;
         }
 
-        //myRigid.AddForce(Vector3.forward * speed, ForceMode.Acceleration);
-        transform.Translate(Vector3.forward * speed * 0.07f);
+        myRigid.AddForce(transform.forward * speed, ForceMode.Force);
+        //transform.Translate(Vector3.forward * speed * 0.07f);
         transform.Translate(Vector3.up * vSpeed);
     }
 
